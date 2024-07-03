@@ -16,8 +16,11 @@ class NoiseMeter:
         self.recorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP)
         self.recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
         self.recorder.setOutputFile('/dev/null')
-        self.recorder.prepare()
-        self.recorder.start()
+        try:
+            self.recorder.prepare()
+            self.recorder.start()
+        except Exception as e:
+            Logger.error(f"Error starting MediaRecorder: {e}")
 
     def get_noise_level(self):
         try:
@@ -27,16 +30,18 @@ class NoiseMeter:
             return 0
 
     def stop(self):
-        self.recorder.stop()
-        self.recorder.release()
+        try:
+            self.recorder.stop()
+            self.recorder.release()
+        except Exception as e:
+            Logger.error(f"Error stopping MediaRecorder: {e}")
 
 def set_ringtone_mode(noise_level):
-    # Get the current activity context
     PythonActivity = autoclass('org.kivy.android.PythonActivity')
     activity = PythonActivity.mActivity
     audio_manager = activity.getSystemService(Context.AUDIO_SERVICE)
 
-    THRESHOLD = 2000  # Example threshold, adjust as needed
+    THRESHOLD = 2000
     MAX_VOLUME = audio_manager.getStreamMaxVolume(AudioManager.STREAM_RING)
 
     if noise_level > THRESHOLD:
@@ -49,19 +54,17 @@ class AutoRingtoneApp(App):
     def build(self):
         self.label = Label(text="Auto Ringtone App")
         self.noise_meter = NoiseMeter()
-        Clock.schedule_interval(self.update_ringtone, 1)  # Check every 1 second
-        self.start_background_service()
+        Clock.schedule_interval(self.update_ringtone, 1)
         return self.label
 
     def update_ringtone(self, dt):
         noise_level = self.noise_meter.get_noise_level()
         set_ringtone_mode(noise_level)
 
-        # Check noise level and show/hide notification based on threshold
         if noise_level > 2000:
             self.show_notification("AutoRing is now active")
         else:
-            notification.dismiss("auto_ringtone_notification")
+            self.dismiss_notification()
 
     def show_notification(self, message):
         notification.notify(
@@ -69,16 +72,20 @@ class AutoRingtoneApp(App):
             message=message,
             app_name='AutoRingtone App',
             ticker='AutoRing is running',
-            app_icon=None,  # You can provide an icon path here
+            app_icon=None,
             tag="auto_ringtone_notification"
         )
 
-    def start_background_service(self):
-        PythonService = autoclass('org.kivy.android.PythonService')
-        self.service = PythonService.mService
-
-        from android import mActivity
-        mActivity.startService(self.service)
+    def dismiss_notification(self):
+        notification.notify(
+            title="AutoRing",
+            message="AutoRing is now inactive",
+            app_name='AutoRingtone App',
+            ticker='AutoRing is not running',
+            app_icon=None,
+            tag="auto_ringtone_notification",
+            timeout=1
+        )
 
     def on_stop(self):
         self.noise_meter.stop()
