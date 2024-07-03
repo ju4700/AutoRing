@@ -16,9 +16,9 @@ To install AutoRingtone, download the APK file from the releases section and ins
 
 ## Permissions:
 AutoRingtone requires the following permissions:
-** Microphone access: Used to monitor ambient noise levels.
-** Notification access: Allows the app to display notifications.
-** Usage:
+* Microphone access: Used to monitor ambient noise levels.
+* Notification access: Allows the app to display notifications.
+* Usage:
     Launch the AutoRingtone app.
     Adjust the ambient noise threshold if needed.
     Keep the app running in the background.
