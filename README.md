@@ -1,6 +1,10 @@
 # AutoRing App
 AutoRing is an Android application developed using Kivy that automatically adjusts the device's ringtone mode based on ambient noise levels. The app uses the device's microphone to continuously monitor noise levels. When the noise level exceeds a predefined threshold, the app switches the device to normal ring mode and sets the ringtone volume to maximum. Conversely, when the noise level falls below the threshold, the app switches the device to vibrate mode.
 
+![Autoring](https://github.com/user-attachments/assets/8b768b96-571b-45e4-945b-023c6f313528) ![Autoring (1)](https://github.com/user-attachments/assets/ba3ea223-e9b5-492c-ac7b-76c582483295)
+
+
+
 ## Features:
 Automatically adjusts ringtone mode based on ambient noise levels.
 Runs in the background as a service.
